@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}编辑个人简介{% endblock %}
+{% block content %}
+<div class="content-page">
+
+<div class="resume-edit">
+    <h3 class="mb-4"><i class="bi bi-pencil"></i> 编辑简历</h3>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="row g-4">
+            <!-- 左列 -->
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5 class="mb-3">基本信息</h5>
+                    <div class="mb-3">
+                        <label class="form-label">姓名</label>
+                        <input type="text" name="name" class="form-control" value="{{ profile.name if profile }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">一句话介绍</label>
+                        <input type="text" name="bio" class="form-control" value="{{ profile.bio if profile }}" placeholder="如：热爱编程的学生">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">所在地</label>
+                        <input type="text" name="location" class="form-control" value="{{ profile.location if profile }}" placeholder="如：北京">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">生日</label>
+                        <input type="text" name="birthday" class="form-control" value="{{ profile.birthday if profile }}" placeholder="如：2000-01-01">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">联系方式</label>
+                        <input type="text" name="contact" class="form-control" value="{{ profile.contact if profile }}" placeholder="邮箱 / 微信 / GitHub">
+                    </div>
+                </div>
+
+                <div class="card p-3 mt-3">
+                    <h5 class="mb-3">教育背景</h5>
+                    <div class="mb-3">
+                        <label class="form-label">学校</label>
+                        <input type="text" name="school" class="form-control" value="{{ profile.school if profile }}" placeholder="如：北京大学">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">专业</label>
+                        <input type="text" name="major" class="form-control" value="{{ profile.major if profile }}" placeholder="如：计算机科学与技术">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">学历</label>
+                        <input type="text" name="degree" class="form-control" value="{{ profile.degree if profile }}" placeholder="如：本科 / 硕士">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">毕业年份</label>
+                        <input type="text" name="graduation_year" class="form-control" value="{{ profile.graduation_year if profile }}" placeholder="如：2026">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右列 -->
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5 class="mb-3">技能（用逗号分隔）</h5>
+                    <input type="text" name="skills" class="form-control" value="{{ profile.skills if profile }}" placeholder="Python, Flask, JavaScript, ...">
+                </div>
+
+                <div class="card p-3 mt-3">
+                    <h5 class="mb-3">经历</h5>
+                    <textarea name="experience" class="form-control" rows="6"
+                              placeholder="项目经历、实习经历、获奖情况等...">{{ profile.experience if profile }}</textarea>
+                </div>
+
+                <div class="card p-3 mt-3">
+                    <h5 class="mb-3">证件照</h5>
+                    {% if profile.avatar %}
+                    <div class="mb-2">
+                        <img src="{{ url_for('uploaded_file', filename=profile.avatar) }}" class="edit-avatar-preview">
+                    </div>
+                    {% endif %}
+                    <input type="file" name="avatar" class="form-control" accept="image/*">
+                    <small class="text-muted">建议正方形照片，更换后自动删除旧照</small>
+                </div>
+
+                <div class="card p-3 mt-3">
+                    <h5 class="mb-3">生活照（可多选）</h5>
+                    {% if life_photos %}
+                    <div class="life-edit-grid mb-2">
+                        {% for photo in life_photos %}
+                        <div class="life-edit-item">
+                            <img src="{{ url_for('uploaded_file', filename=photo) }}">
+                            <a href="{{ url_for('delete_life_photo', filename=photo) }}" class="life-delete-btn"
+                               onclick="return confirm('删除这张生活照？')">&times;</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <input type="file" name="life_photos" class="form-control" accept="image/*" multiple>
+                    <small class="text-muted">可一次选择多张，新照片会追加到已有列表</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4 justify-content-center">
+            <button type="submit" class="btn btn-primary px-5">
+                <i class="bi bi-check-lg"></i> 保存
+            </button>
+            <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">取消</a>
+        </div>
+    </form>
+</div>
+
+</div>
+{% endblock %}

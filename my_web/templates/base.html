@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Learning Hub{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" id="navbar">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                &#x1F989; My Learning Hub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">首页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('links') }}">网址导航</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('gallery') }}">图片储存</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('diary') }}">学习日记</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">个人简介</a></li>
+                </ul>
+                <div class="ms-lg-3 mt-2 mt-lg-0 d-flex align-items-center gap-2">
+                    <button class="theme-toggle" id="themeToggle" title="切换主题">
+                        <span class="theme-icon-dark">🌙</span>
+                        <span class="theme-icon-light">☀️</span>
+                    </button>
+                    {% if session.logged_in %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">退出</a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm">登录</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show m-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <small>&copy; My Learning Hub — 现在就是未来</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    (function() {
+        const html = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const navbar = document.getElementById('navbar');
+        const iconDark = document.querySelector('.theme-icon-dark');
+        const iconLight = document.querySelector('.theme-icon-light');
+
+        function applyTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            if (theme === 'light') {
+                navbar.classList.remove('navbar-dark');
+                navbar.classList.add('navbar-light', 'bg-light');
+            } else {
+                navbar.classList.add('navbar-dark');
+                navbar.classList.remove('navbar-light', 'bg-light');
+            }
+            iconDark.style.display = theme === 'light' ? 'none' : 'inline';
+            iconLight.style.display = theme === 'light' ? 'inline' : 'none';
+        }
+
+        const saved = localStorage.getItem('theme') || 'dark';
+        applyTheme(saved);
+
+        toggle.addEventListener('click', () => {
+            const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', next);
+            applyTheme(next);
+        });
+    })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

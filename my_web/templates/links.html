@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}网址导航{% endblock %}
+{% block content %}
+<div class="content-page">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h2 class="mb-0"><i class="bi bi-link-45deg"></i> 网址导航</h2>
+    {% if session.logged_in %}
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addLinkModal">
+        <i class="bi bi-plus-lg"></i> 添加链接
+    </button>
+    {% endif %}
+</div>
+
+{% if categories %}
+<div class="mb-3">
+    <a href="{{ url_for('links') }}" class="btn btn-sm btn-outline-primary me-1 mb-1 {% if not current_category %}active{% endif %}">全部</a>
+    {% for cat in categories %}
+    <a href="{{ url_for('links', category=cat) }}" class="btn btn-sm btn-outline-primary me-1 mb-1 {% if current_category == cat %}active{% endif %}">{{ cat }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if links %}
+<div class="row g-3">
+    {% for link in links %}
+    <div class="col-md-6">
+        <div class="card link-card h-100 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="card-title mb-1">
+                        <a href="{{ link.url }}" target="_blank" rel="noopener" class="text-decoration-none">
+                            {{ link.title }}
+                            <i class="bi bi-box-arrow-up-right small text-muted"></i>
+                        </a>
+                    </h6>
+                    <small class="text-muted">
+                        {% if link.category %}<span class="badge bg-secondary me-1">{{ link.category }}</span>{% endif %}
+                        {{ link.url[:60] }}{% if link.url|length > 60 %}...{% endif %}
+                    </small>
+                </div>
+                {% if session.logged_in %}
+                <a href="{{ url_for('delete_link', link_id=link.id) }}"
+                   class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('确定删除这个链接？')">
+                    <i class="bi bi-trash"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-inbox display-1"></i>
+    <p class="mt-3">还没有收藏任何链接，登录后开始添加吧！</p>
+</div>
+{% endif %}
+
+{% if session.logged_in %}
+<div class="modal fade" id="addLinkModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('add_link') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加链接</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">标题</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">网址</label>
+                        <input type="url" name="url" class="form-control" placeholder="https://" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">分类</label>
+                        <input type="text" name="category" class="form-control" placeholder="如：前端、Python、设计">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+{% endblock %}

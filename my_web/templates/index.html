@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}首页{% endblock %}
+{% block content %}
+
+<!-- 墓志铭 英雄区 -->
+<section class="hero">
+    <div class="hero-stars" id="stars"></div>
+    <div class="hero-content">
+        <div class="epitaph">
+            <span class="epitaph-char">现</span>
+            <span class="epitaph-char">在</span>
+            <span class="epitaph-char">就</span>
+            <span class="epitaph-char">是</span>
+            <span class="epitaph-char">未</span>
+            <span class="epitaph-char">来</span>
+        </div>
+        <p class="epitaph-sub">NOW IS THE FUTURE</p>
+        <p class="epitaph-desc">每一个当下，都是你曾经期待的未来。别等，现在就学。</p>
+    </div>
+</section>
+
+<!-- 学习伙伴 -->
+<div class="mascot-section">
+    <div class="mascot-wrapper">
+        <!-- 对话气泡 -->
+        <div class="speech-bubble">
+            <span id="bubble-text">今天学习了吗？</span>
+        </div>
+        <!-- 猫头鹰伙伴（纯CSS） -->
+        <div class="owl" id="owl">
+            <div class="owl-body">
+                <div class="owl-belly"></div>
+                <div class="owl-wing owl-wing-left"></div>
+                <div class="owl-wing owl-wing-right"></div>
+            </div>
+            <div class="owl-head">
+                <div class="owl-ear owl-ear-left"></div>
+                <div class="owl-ear owl-ear-right"></div>
+                <div class="owl-face">
+                    <div class="owl-eye owl-eye-left">
+                        <div class="owl-pupil"></div>
+                    </div>
+                    <div class="owl-eye owl-eye-right">
+                        <div class="owl-pupil"></div>
+                    </div>
+                    <div class="owl-beak"></div>
+                </div>
+            </div>
+            <div class="owl-feet">
+                <div class="owl-foot owl-foot-left"></div>
+                <div class="owl-foot owl-foot-right"></div>
+            </div>
+            <!-- 书本 -->
+            <div class="owl-book">
+                <div class="book-spine"></div>
+                <div class="book-page book-page-left"></div>
+                <div class="book-page book-page-right"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 功能模块 -->
+<section class="modules">
+    <h2 class="modules-title">学习工具箱</h2>
+    <div class="modules-grid">
+        <a href="{{ url_for('links') }}" class="module-card">
+            <span class="module-icon">🔗</span>
+            <h4>网址导航</h4>
+            <p>收藏学习网站</p>
+        </a>
+        <a href="{{ url_for('gallery') }}" class="module-card">
+            <span class="module-icon">🖼️</span>
+            <h4>图片储存</h4>
+            <p>管理学习资料</p>
+        </a>
+        <a href="{{ url_for('diary') }}" class="module-card">
+            <span class="module-icon">📝</span>
+            <h4>学习日记</h4>
+            <p>记录每日心得</p>
+        </a>
+        <a href="{{ url_for('profile') }}" class="module-card">
+            <span class="module-icon">👤</span>
+            <h4>个人简介</h4>
+            <p>展示你的技能</p>
+        </a>
+    </div>
+</section>
+
+<!-- 学习名言 -->
+<section class="quote-section">
+    <p class="quote-text" id="quote">学而不思则罔，思而不学则殆。</p>
+    <p class="quote-author">—— 孔子</p>
+</section>
+
+<script>
+// 猫头鹰眨眼和气泡消息
+const bubbles = ['今天学习了吗？', '别忘了写日记哦！', '坚持就是胜利！', '学无止境！', '现在就是未来！', '你又变强了！', '休息一下，继续前进！'];
+let idx = 0;
+
+setInterval(() => {
+    idx = (idx + 1) % bubbles.length;
+    const el = document.getElementById('bubble-text');
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = bubbles[idx]; el.style.opacity = '1'; }, 300);
+}, 5000);
+
+// 猫头鹰眼睛跟踪鼠标
+document.addEventListener('mousemove', (e) => {
+    const pupils = document.querySelectorAll('.owl-pupil');
+    const owl = document.getElementById('owl');
+    const rect = owl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / 40;
+    const dy = (e.clientY - cy) / 40;
+    const x = Math.max(-6, Math.min(6, dx));
+    const y = Math.max(-6, Math.min(6, dy));
+    pupils.forEach(p => { p.style.transform = `translate(${x}px, ${y}px)`; });
+});
+
+// 点击猫头鹰切换气泡
+document.getElementById('owl').addEventListener('click', () => {
+    idx = (idx + 1) % bubbles.length;
+    const el = document.getElementById('bubble-text');
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = bubbles[idx]; el.style.opacity = '1'; }, 300);
+});
+
+// 动态背景星星
+const starsContainer = document.getElementById('stars');
+for (let i = 0; i < 60; i++) {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (2 + Math.random() * 3) + 's';
+    starsContainer.appendChild(star);
+}
+
+// 名言轮换
+const quotes = [
+    { text: '学而不思则罔，思而不学则殆。', author: '孔子' },
+    { text: '现在就是未来，未来始于足下。', author: '' },
+    { text: 'Stay hungry, stay foolish.', author: 'Steve Jobs' },
+    { text: '学习永远不晚。', author: '高尔基' },
+    { text: '不积跬步，无以至千里。', author: '荀子' },
+];
+let qi = 0;
+setInterval(() => {
+    qi = (qi + 1) % quotes.length;
+    const tel = document.querySelector('.quote-text');
+    const ael = document.querySelector('.quote-author');
+    tel.style.opacity = '0';
+    ael.style.opacity = '0';
+    setTimeout(() => {
+        tel.textContent = quotes[qi].text;
+        ael.textContent = quotes[qi].author ? '—— ' + quotes[qi].author : '';
+        tel.style.opacity = '1';
+        ael.style.opacity = '1';
+    }, 400);
+}, 8000);
+</script>
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}个人简介{% endblock %}
+{% block content %}
+<div class="content-page">
+
+<div class="resume">
+
+    <!-- 头部：证件照 + 基本信息 -->
+    <div class="resume-header">
+        <div class="resume-avatar-wrap">
+            {% if profile.avatar %}
+            <img src="{{ url_for('uploaded_file', filename=profile.avatar) }}" class="resume-avatar" alt="证件照">
+            {% else %}
+            <div class="resume-avatar resume-avatar-empty">
+                <span>{{ profile.name[0] if profile.name else '?' }}</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="resume-intro">
+            <h1>{{ profile.name or '你的姓名' }}</h1>
+            <p class="resume-bio">{{ profile.bio or '一句话介绍自己' }}</p>
+            <div class="resume-quick-info">
+                {% if profile.location %}
+                <span><i class="bi bi-geo-alt"></i> {{ profile.location }}</span>
+                {% endif %}
+                {% if profile.birthday %}
+                <span><i class="bi bi-calendar-heart"></i> {{ profile.birthday }}</span>
+                {% endif %}
+                {% if profile.contact %}
+                <span><i class="bi bi-envelope"></i> {{ profile.contact }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 教育背景 -->
+    {% if profile.school or profile.major or profile.degree %}
+    <div class="resume-section">
+        <h3 class="resume-section-title"><i class="bi bi-mortarboard"></i> 教育背景</h3>
+        <div class="resume-card">
+            <div class="resume-card-main">
+                <strong>{{ profile.school or '' }}</strong>
+                <span class="resume-muted">{{ profile.major or '' }}{% if profile.degree %} · {{ profile.degree }}{% endif %}</span>
+            </div>
+            {% if profile.graduation_year %}
+            <span class="resume-year">{{ profile.graduation_year }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 技能 -->
+    {% if profile.skills %}
+    <div class="resume-section">
+        <h3 class="resume-section-title"><i class="bi bi-tools"></i> 技能</h3>
+        <div class="resume-skills">
+            {% for skill in profile.skills.split(',') %}
+            <span class="skill-tag">{{ skill.strip() }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 经历 -->
+    {% if profile.experience %}
+    <div class="resume-section">
+        <h3 class="resume-section-title"><i class="bi bi-briefcase"></i> 经历</h3>
+        <div class="resume-experience">{{ profile.experience | replace('\n', '<br>') | safe }}</div>
+    </div>
+    {% endif %}
+
+    <!-- 生活照 -->
+    {% if life_photos %}
+    <div class="resume-section">
+        <h3 class="resume-section-title"><i class="bi bi-camera"></i> 生活照</h3>
+        <div class="life-photos-grid">
+            {% for photo in life_photos %}
+            <a href="{{ url_for('uploaded_file', filename=photo) }}" target="_blank" class="life-photo-card">
+                <img src="{{ url_for('uploaded_file', filename=photo) }}" alt="生活照" loading="lazy">
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if session.logged_in %}
+    <div class="text-center mt-4">
+        <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> 编辑简历
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+</div>
+{% endblock %}

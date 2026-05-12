@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ entry.title }}{% endblock %}
+{% block content %}
+<div class="content-page">
+
+<div class="diary-detail">
+    <div class="diary-detail-header">
+        <a href="{{ url_for('diary') }}" class="btn btn-outline-secondary btn-sm mb-3">
+            <i class="bi bi-arrow-left"></i> 返回列表
+        </a>
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h2>{{ entry.title }} <span class="diary-detail-mood">{{ entry.mood }}</span></h2>
+                <div class="diary-detail-meta">
+                    <span><i class="bi bi-calendar3"></i> {{ entry.created_at[:10] }}</span>
+                    <span><i class="bi bi-clock"></i> {{ entry.created_at[11:16] }}</span>
+                    {% if entry.updated_at != entry.created_at %}
+                    <span class="diary-edited">已编辑</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if session.logged_in %}
+            <div class="d-flex gap-1">
+                <a href="{{ url_for('edit_diary', entry_id=entry.id) }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-pencil"></i> 编辑
+                </a>
+                <a href="{{ url_for('delete_diary', entry_id=entry.id) }}"
+                   class="btn btn-outline-danger btn-sm"
+                   onclick="return confirm('确定删除这篇日记？')">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="diary-detail-body markdown-body">
+        {{ entry.content }}
+    </div>
+
+    {% if files %}
+    <div class="diary-attachments">
+        <h5><i class="bi bi-paperclip"></i> 附件（{{ files|length }}）</h5>
+        <div class="attachments-list">
+            {% for f in files %}
+            <div class="attachment-item">
+                {% if f.original_name.rsplit('.', 1)[1].lower() in ('png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp') %}
+                <a href="{{ url_for('uploaded_file', filename=f.filename) }}" target="_blank" class="attachment-preview">
+                    <img src="{{ url_for('uploaded_file', filename=f.filename) }}" alt="{{ f.original_name }}" loading="lazy">
+                </a>
+                {% else %}
+                <span class="attachment-icon">
+                    {% set ext = f.original_name.rsplit('.', 1)[1].lower() %}
+                    {% if ext == 'pdf' %}<i class="bi bi-file-pdf"></i>
+                    {% elif ext in ('doc', 'docx') %}<i class="bi bi-file-word"></i>
+                    {% elif ext in ('xlsx', 'xls') %}<i class="bi bi-file-excel"></i>
+                    {% elif ext in ('zip', 'rar') %}<i class="bi bi-file-zip"></i>
+                    {% elif ext == 'txt' %}<i class="bi bi-file-text"></i>
+                    {% else %}<i class="bi bi-file"></i>
+                    {% endif %}
+                </span>
+                {% endif %}
+                <div class="attachment-info">
+                    <span class="attachment-name">{{ f.original_name }}</span>
+                    <a href="{{ url_for('uploaded_file', filename=f.filename) }}" class="attachment-download" download>
+                        <i class="bi bi-download"></i> 下载
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+// 渲染 Markdown
+(function() {
+    const body = document.querySelector('.markdown-body');
+    if (body) {
+        body.innerHTML = marked.parse(body.textContent);
+    }
+})();
+</script>
+{% endblock %}
